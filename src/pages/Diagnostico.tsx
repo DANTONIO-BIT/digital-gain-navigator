@@ -1,135 +1,121 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useDiagnostic, DiagnosticAnswers, DiagnosticResult } from "@/context/DiagnosticContext";
-import { ArrowLeft, ArrowRight, Brain } from "lucide-react";
+import Navbar from "@/components/Navbar";
 
 interface Question {
   id: keyof DiagnosticAnswers;
   question: string;
-  type: "radio" | "scale";
-  options?: { value: string; label: string }[];
+  options: { value: string; label: string }[];
 }
 
 const questions: Question[] = [
   {
     id: "sector",
-    question: "¿En qué sector opera tu empresa?",
-    type: "radio",
+    question: "¿En qué sector opera tu negocio?",
     options: [
-      { value: "retail", label: "Retail / Comercio" },
+      { value: "retail", label: "Comercio / Tienda" },
       { value: "servicios", label: "Servicios profesionales" },
+      { value: "restauracion", label: "Hostelería / Restauración" },
       { value: "industria", label: "Industria / Manufactura" },
-      { value: "tecnologia", label: "Tecnología / Software" },
       { value: "otro", label: "Otro" },
     ],
   },
   {
     id: "companySize",
-    question: "¿Cuántos empleados tiene tu empresa?",
-    type: "radio",
+    question: "¿Cuántas personas forman tu equipo?",
     options: [
-      { value: "1-10", label: "1-10 empleados" },
-      { value: "11-50", label: "11-50 empleados" },
-      { value: "51-200", label: "51-200 empleados" },
-      { value: "200+", label: "Más de 200" },
+      { value: "autonomo", label: "Solo yo (autónomo)" },
+      { value: "1-10", label: "2-10 personas" },
+      { value: "11-50", label: "11-50 personas" },
+      { value: "200+", label: "Más de 50" },
     ],
   },
   {
     id: "annualRevenue",
     question: "¿Cuál es la facturación anual aproximada?",
-    type: "radio",
     options: [
-      { value: "100000", label: "Menos de 500K €" },
-      { value: "500000", label: "500K - 2M €" },
-      { value: "2000000", label: "2M - 10M €" },
-      { value: "10000000", label: "Más de 10M €" },
+      { value: "100000", label: "Menos de 100K €" },
+      { value: "500000", label: "100K - 500K €" },
+      { value: "2000000", label: "500K - 2M €" },
+      { value: "10000000", label: "Más de 2M €" },
     ],
   },
   {
     id: "dataUsage",
-    question: "¿Cómo gestionáis los datos de clientes y operaciones?",
-    type: "radio",
+    question: "¿Cómo gestionas la información de tus clientes?",
     options: [
-      { value: "1", label: "Excel / hojas de cálculo" },
-      { value: "2", label: "Software básico (CRM simple)" },
-      { value: "3", label: "Plataforma integrada (ERP/CRM)" },
-      { value: "4", label: "Data warehouse + analítica avanzada" },
+      { value: "1", label: "Papel, memoria o Excel" },
+      { value: "2", label: "WhatsApp / email sin organización" },
+      { value: "3", label: "Software básico (CRM simple)" },
+      { value: "4", label: "Plataforma integrada con analítica" },
     ],
   },
   {
     id: "techLevel",
-    question: "¿Qué nivel de adopción tecnológica tiene tu equipo?",
-    type: "radio",
+    question: "¿Qué nivel digital tiene tu negocio hoy?",
     options: [
-      { value: "1", label: "Básico (email + Office)" },
-      { value: "2", label: "Intermedio (apps cloud, videoconferencia)" },
-      { value: "3", label: "Avanzado (herramientas colaborativas, APIs)" },
-      { value: "4", label: "Experto (DevOps, IA, automatización)" },
+      { value: "1", label: "Básico — solo email y teléfono" },
+      { value: "2", label: "Intermedio — alguna app o herramienta online" },
+      { value: "3", label: "Avanzado — varias herramientas digitales coordinadas" },
+      { value: "4", label: "Digital-first — todo automatizado y medido" },
     ],
   },
   {
     id: "automation",
-    question: "¿Cuántos procesos tenéis automatizados?",
-    type: "radio",
+    question: "¿Cuántas tareas tienes automatizadas?",
     options: [
-      { value: "1", label: "Ninguno o casi ninguno" },
-      { value: "2", label: "Algunos (facturación, emails)" },
-      { value: "3", label: "Bastantes (marketing, ventas, soporte)" },
-      { value: "4", label: "La mayoría de procesos clave" },
+      { value: "1", label: "Ninguna, todo es manual" },
+      { value: "2", label: "Alguna puntual (factura automática, etc.)" },
+      { value: "3", label: "Bastantes (emails, recordatorios, reservas)" },
+      { value: "4", label: "La mayoría de procesos repetitivos" },
     ],
   },
   {
     id: "dataStrategy",
-    question: "¿Tenéis una estrategia de datos definida?",
-    type: "radio",
+    question: "¿Cómo tomas las decisiones importantes en tu negocio?",
     options: [
-      { value: "1", label: "No, tomamos decisiones por intuición" },
-      { value: "2", label: "Usamos algunos informes básicos" },
-      { value: "3", label: "Dashboards y KPIs definidos" },
-      { value: "4", label: "Decisiones data-driven con predicciones" },
+      { value: "1", label: "Por intuición y experiencia" },
+      { value: "2", label: "Con algunos datos básicos" },
+      { value: "3", label: "Con KPIs y métricas definidas" },
+      { value: "4", label: "Con datos en tiempo real y predicciones" },
     ],
   },
   {
     id: "cloudAdoption",
-    question: "¿Cuál es vuestro nivel de adopción cloud?",
-    type: "radio",
+    question: "¿Tienes presencia digital activa?",
     options: [
-      { value: "1", label: "Todo en servidores locales" },
-      { value: "2", label: "Algo en cloud (email, almacenamiento)" },
-      { value: "3", label: "Infraestructura híbrida" },
-      { value: "4", label: "Cloud-first / cloud-native" },
+      { value: "1", label: "No tengo web ni redes activas" },
+      { value: "2", label: "Tengo redes pero no las cuido" },
+      { value: "3", label: "Web + redes con actividad regular" },
+      { value: "4", label: "Presencia completa con estrategia SEO/ads" },
     ],
   },
   {
     id: "cybersecurity",
-    question: "¿Qué medidas de ciberseguridad tenéis?",
-    type: "radio",
+    question: "¿Cómo consigues nuevos clientes actualmente?",
     options: [
-      { value: "1", label: "Antivirus básico" },
-      { value: "2", label: "Firewall + backups periódicos" },
-      { value: "3", label: "Política de seguridad + formación" },
-      { value: "4", label: "SOC / monitorización 24/7 + auditorías" },
+      { value: "1", label: "Boca a boca solamente" },
+      { value: "2", label: "Boca a boca + algo de redes" },
+      { value: "3", label: "Marketing activo pero sin medir resultados" },
+      { value: "4", label: "Marketing medido con ROI claro" },
     ],
   },
   {
     id: "digitalCulture",
-    question: "¿Cómo describirías la cultura digital de tu empresa?",
-    type: "radio",
+    question: "¿Cuánto tiempo dedicas a tareas que no generan ingresos?",
     options: [
-      { value: "1", label: "Resistencia al cambio" },
-      { value: "2", label: "Abiertos pero sin iniciativa" },
-      { value: "3", label: "Proactivos en innovación" },
-      { value: "4", label: "Digital-first en todo" },
+      { value: "1", label: "Más de la mitad de mi jornada" },
+      { value: "2", label: "Bastante — me roba tiempo productivo" },
+      { value: "3", label: "Algo, pero lo tengo controlado" },
+      { value: "4", label: "Muy poco, tengo sistemas eficientes" },
     ],
   },
 ];
 
-function calculateResult(answers: DiagnosticAnswers): DiagnosticResult {
+const calculateResult = (answers: DiagnosticAnswers): DiagnosticResult => {
   const numericFields: (keyof DiagnosticAnswers)[] = [
     "dataUsage", "techLevel", "automation", "dataStrategy",
     "cloudAdoption", "cybersecurity", "digitalCulture",
@@ -138,7 +124,6 @@ function calculateResult(answers: DiagnosticAnswers): DiagnosticResult {
   const total = scores.reduce((a, b) => a + b, 0);
   const maxTotal = numericFields.length * 4;
   const score = Math.round((total / maxTotal) * 100);
-
   const level = score >= 70 ? "avanzado" : score >= 40 ? "intermedio" : "básico";
 
   const revenueMap: Record<string, number> = {
@@ -153,130 +138,151 @@ function calculateResult(answers: DiagnosticAnswers): DiagnosticResult {
     { name: "Tecnología", value: Number(answers.techLevel) * 25 },
     { name: "Automatización", value: Number(answers.automation) * 25 },
     { name: "Estrategia", value: Number(answers.dataStrategy) * 25 },
-    { name: "Cloud", value: Number(answers.cloudAdoption) * 25 },
-    { name: "Seguridad", value: Number(answers.cybersecurity) * 25 },
-    { name: "Cultura", value: Number(answers.digitalCulture) * 25 },
+    { name: "Presencia", value: Number(answers.cloudAdoption) * 25 },
+    { name: "Captación", value: Number(answers.cybersecurity) * 25 },
+    { name: "Eficiencia", value: Number(answers.digitalCulture) * 25 },
   ];
 
   const quickWins: string[] = [];
   const recommendations: string[] = [];
 
   if (Number(answers.dataUsage) <= 2) {
-    quickWins.push("Centralizar datos en un CRM integrado");
-    recommendations.push("Implementar Data Intelligence para decisiones basadas en datos");
+    quickWins.push("Centralizar contactos en un CRM básico esta semana");
+    recommendations.push("CRM adaptado a tu sector para no perder ninguna oportunidad");
   }
   if (Number(answers.automation) <= 2) {
-    quickWins.push("Automatizar facturación y seguimiento de clientes");
-    recommendations.push("Diseñar workflows automáticos para procesos repetitivos");
-  }
-  if (Number(answers.cybersecurity) <= 2) {
-    quickWins.push("Activar autenticación de doble factor en todos los sistemas");
-    recommendations.push("Auditoría de seguridad y plan de protección de datos");
-  }
-  if (Number(answers.dataStrategy) <= 2) {
-    quickWins.push("Definir 5 KPIs clave del negocio");
-    recommendations.push("Dashboard ejecutivo con métricas en tiempo real");
+    quickWins.push("Automatizar recordatorios y seguimiento de clientes");
+    recommendations.push("Workflows que eliminen las tareas manuales repetitivas");
   }
   if (Number(answers.cloudAdoption) <= 2) {
-    quickWins.push("Migrar el email y almacenamiento a la nube");
-    recommendations.push("Plan de migración cloud con IA local para mantener privacidad");
+    quickWins.push("Crear o actualizar tu ficha de Google My Business");
+    recommendations.push("Estrategia de presencia digital local con SEO y redes activas");
+  }
+  if (Number(answers.cybersecurity) <= 2) {
+    quickWins.push("Activar campañas de bajo coste en Meta para Sevilla");
+    recommendations.push("Plan de marketing local con retorno medible en cada euro");
+  }
+  if (Number(answers.dataStrategy) <= 2) {
+    quickWins.push("Definir 3 métricas clave de tu negocio y medirlas semanalmente");
+    recommendations.push("Dashboard sencillo para tomar decisiones con datos reales");
   }
 
-  if (quickWins.length === 0) quickWins.push("Optimizar flujos existentes con IA predictiva");
-  if (recommendations.length === 0) recommendations.push("Escalar tu infraestructura data-driven con modelos avanzados");
+  if (quickWins.length === 0) quickWins.push("Optimizar los flujos existentes para escalar sin añadir coste");
+  if (recommendations.length === 0) recommendations.push("Escalar la estrategia digital con acciones de mayor impacto");
 
   return { score, level, estimatedLoss, areas, quickWins, recommendations };
-}
+};
 
 const Diagnostico = () => {
   const navigate = useNavigate();
   const { setAnswers, setResult } = useDiagnostic();
   const [step, setStep] = useState(0);
-  const [currentAnswers, setCurrentAnswers] = useState<Record<string, string>>({});
+  const [answers, setLocalAnswers] = useState<Record<string, string>>({});
 
   const currentQ = questions[step];
-  const progress = ((step + 1) / questions.length) * 100;
-  const canNext = !!currentAnswers[currentQ.id];
+  const progress = (step / questions.length) * 100;
+  const canNext = !!answers[currentQ.id];
 
   const handleNext = () => {
     if (step < questions.length - 1) {
       setStep(step + 1);
     } else {
-      const finalAnswers: DiagnosticAnswers = {
-        sector: currentAnswers.sector || "",
-        companySize: currentAnswers.companySize || "",
-        annualRevenue: currentAnswers.annualRevenue || "500000",
-        dataUsage: Number(currentAnswers.dataUsage) || 1,
-        techLevel: Number(currentAnswers.techLevel) || 1,
-        automation: Number(currentAnswers.automation) || 1,
-        dataStrategy: Number(currentAnswers.dataStrategy) || 1,
-        cloudAdoption: Number(currentAnswers.cloudAdoption) || 1,
-        cybersecurity: Number(currentAnswers.cybersecurity) || 1,
-        digitalCulture: Number(currentAnswers.digitalCulture) || 1,
+      const final: DiagnosticAnswers = {
+        sector: answers.sector || "",
+        companySize: answers.companySize || "",
+        annualRevenue: answers.annualRevenue || "500000",
+        dataUsage: Number(answers.dataUsage) || 1,
+        techLevel: Number(answers.techLevel) || 1,
+        automation: Number(answers.automation) || 1,
+        dataStrategy: Number(answers.dataStrategy) || 1,
+        cloudAdoption: Number(answers.cloudAdoption) || 1,
+        cybersecurity: Number(answers.cybersecurity) || 1,
+        digitalCulture: Number(answers.digitalCulture) || 1,
       };
-      setAnswers(finalAnswers);
-      setResult(calculateResult(finalAnswers));
+      setAnswers(final);
+      setResult(calculateResult(final));
       navigate("/resultados");
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <nav className="border-b bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center gap-3">
-          <button onClick={() => navigate("/")} className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-            <Brain className="h-6 w-6 text-primary" />
-            <span className="font-bold">Digital Lab</span>
-          </button>
-          <span className="text-muted-foreground text-sm ml-auto">Pregunta {step + 1} de {questions.length}</span>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-void text-raw flex flex-col">
+      <Navbar />
 
-      <div className="container mx-auto px-4 py-4 max-w-2xl">
-        <Progress value={progress} className="h-2" />
+      {/* Progress bar */}
+      <div className="fixed top-14 left-0 right-0 z-40 h-[2px] bg-wire">
+        <div
+          className="h-full transition-all duration-500 ease-out"
+          style={{ width: `${progress}%`, background: "#A05730" }}
+        />
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 pb-20">
-        <Card className="w-full max-w-2xl border-border/50 shadow-lg">
-          <CardContent className="p-8 md:p-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8">{currentQ.question}</h2>
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-20">
+        <div className="w-full max-w-xl">
+          <div className="flex items-center justify-between mb-10">
+            <span className="label-terra">Diagnóstico gratuito</span>
+            <span className="mono-num text-xs" style={{ color: "#3A3A3A" }}>
+              {step + 1} / {questions.length}
+            </span>
+          </div>
 
-            <RadioGroup
-              value={currentAnswers[currentQ.id] || ""}
-              onValueChange={(val) => setCurrentAnswers({ ...currentAnswers, [currentQ.id]: val })}
-              className="space-y-3"
-            >
-              {currentQ.options?.map((opt) => (
+          <h2 className="text-2xl md:text-3xl font-bold text-raw mb-8 leading-tight" style={{ letterSpacing: "-0.01em" }}>
+            {currentQ.question}
+          </h2>
+
+          <RadioGroup
+            value={answers[currentQ.id] || ""}
+            onValueChange={(val) => setLocalAnswers({ ...answers, [currentQ.id]: val })}
+            className="flex flex-col gap-2.5"
+          >
+            {currentQ.options.map((opt) => {
+              const selected = answers[currentQ.id] === opt.value;
+              return (
                 <Label
                   key={opt.value}
-                  htmlFor={`${currentQ.id}-${opt.value}`}
-                  className={`flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-all ${
-                    currentAnswers[currentQ.id] === opt.value
-                      ? "border-primary bg-accent"
-                      : "border-border hover:border-primary/40"
-                  }`}
+                  htmlFor={`q-${opt.value}`}
+                  className="flex items-center gap-4 p-4 border cursor-pointer transition-all duration-200 text-sm"
+                  style={{
+                    borderColor: selected ? "#A05730" : "#2A2A2A",
+                    background: selected ? "rgba(160,87,48,0.08)" : "transparent",
+                    color: selected ? "#F0EDE8" : "#5A5A5A",
+                  }}
                 >
-                  <RadioGroupItem value={opt.value} id={`${currentQ.id}-${opt.value}`} />
-                  <span className="text-foreground">{opt.label}</span>
+                  <RadioGroupItem
+                    value={opt.value}
+                    id={`q-${opt.value}`}
+                    style={{ borderColor: selected ? "#A05730" : "#3A3A3A" }}
+                  />
+                  <span>{opt.label}</span>
                 </Label>
-              ))}
-            </RadioGroup>
+              );
+            })}
+          </RadioGroup>
 
-            <div className="flex justify-between mt-10">
-              <Button
-                variant="outline"
-                onClick={() => step > 0 ? setStep(step - 1) : navigate("/")}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                {step > 0 ? "Anterior" : "Salir"}
-              </Button>
-              <Button onClick={handleNext} disabled={!canNext}>
-                {step < questions.length - 1 ? "Siguiente" : "Ver resultados"}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          <div className="flex justify-between items-center mt-10">
+            <button
+              onClick={() => step > 0 ? setStep(step - 1) : navigate("/")}
+              className="text-sm transition-colors duration-200"
+              style={{ color: "#3A3A3A" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#F0EDE8")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#3A3A3A")}
+            >
+              ← {step > 0 ? "Anterior" : "Salir"}
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={!canNext}
+              className="px-8 py-3 font-semibold text-sm tracking-wide transition-all duration-200"
+              style={{
+                background: canNext ? "#A05730" : "#1A1A1A",
+                color: canNext ? "#F0EDE8" : "#3A3A3A",
+                cursor: canNext ? "pointer" : "not-allowed",
+              }}
+            >
+              {step < questions.length - 1 ? "Siguiente →" : "Ver mi informe →"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

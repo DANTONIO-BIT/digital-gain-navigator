@@ -8,12 +8,39 @@ export default {
     container: {
       center: true,
       padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+      screens: { "2xl": "1400px" },
     },
     extend: {
+      fontFamily: {
+        sans: ["Space Grotesk", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "Consolas", "monospace"],
+        body: ["Inter", "system-ui", "sans-serif"],
+      },
       colors: {
+        // Light mode tokens
+        lino: "#F9F6F1",           // main bg (light)
+        paper: "#FFFFFF",          // card surface
+        onyx: "#1A1A1A",           // main text (light)
+        stone: "#E0DAD3",          // borders (light)
+
+        // Sevilla brutalist palette — coolors.co/a05730-ffee93-e5dca2-a0ced9
+        void: "#0F0F0F",          // dark bg (terminal section, footer)
+        raw: "#F0EDE8",           // main text on dark
+        terra: {
+          DEFAULT: "#A05730",     // terracotta — primary accent
+          light: "#C4733E",       // hover
+          dim: "#7A3F22",         // pressed
+        },
+        sol: "#FFEE93",           // warm yellow — labels, highlights
+        sand: "#E5DCA2",          // secondary text, muted
+        azul: "#A0CED9",          // tile blue — data / charts
+        surface: "#161616",       // card bg
+        wire: "#2A2A2A",          // borders
+        smoke: "#3A3A3A",         // lighter borders
+        musgo: "#2D6A4F",          // growth accent — results, ROI CTAs
+        muted: "#5A5A5A",
+
+        // shadcn compatibility
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -47,21 +74,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "0px",
+        md: "0px",
+        sm: "0px",
+        DEFAULT: "0px",
       },
       keyframes: {
         "accordion-down": {
@@ -72,15 +90,25 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "fade-in-up": {
-          from: { opacity: "0", transform: "translateY(20px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
+        marquee: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        "bar-grow": {
+          from: { transform: "scaleY(0)" },
+          to: { transform: "scaleY(1)" },
+        },
+        blink: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in-up": "fade-in-up 0.5s ease-out forwards",
+        marquee: "marquee 32s linear infinite",
+        "bar-grow": "bar-grow 1s ease-out forwards",
+        blink: "blink 1s step-end infinite",
       },
     },
   },

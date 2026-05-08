@@ -1,95 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 210 40% 10%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 210 40% 10%;
-
+    /* Light palette — DigiDot Partners */
+    --background: 39 23% 97%;        /* lino #F9F6F1 */
+    --foreground: 0 0% 10%;          /* onyx #1A1A1A */
+    --card: 0 0% 100%;               /* paper #FFFFFF */
+    --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 210 40% 10%;
-
-    --primary: 196 61% 42%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 160 59% 45%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 210 20% 95%;
-    --muted-foreground: 210 15% 45%;
-
-    --accent: 196 61% 95%;
-    --accent-foreground: 196 61% 25%;
-
+    --popover-foreground: 0 0% 10%;
+    --primary: 22 60% 40%;           /* terra #A05730 */
+    --primary-foreground: 36 22% 94%;
+    --secondary: 39 23% 97%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 22 18% 91%;             /* stone-light */
+    --muted-foreground: 0 0% 36%;
+    --accent: 22 60% 40%;
+    --accent-foreground: 36 22% 94%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 196 61% 42%;
-
-    --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 196 61% 42%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 196 61% 95%;
-    --sidebar-accent-foreground: 196 61% 25%;
-    --sidebar-border: 210 20% 90%;
-    --sidebar-ring: 196 61% 42%;
-  }
-
-  .dark {
-    --background: 210 40% 6%;
-    --foreground: 210 20% 95%;
-
-    --card: 210 40% 10%;
-    --card-foreground: 210 20% 95%;
-
-    --popover: 210 40% 10%;
-    --popover-foreground: 210 20% 95%;
-
-    --primary: 196 61% 42%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 160 59% 45%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 210 30% 15%;
-    --muted-foreground: 210 15% 60%;
-
-    --accent: 210 30% 15%;
-    --accent-foreground: 196 61% 70%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 210 30% 18%;
-    --input: 210 30% 18%;
-    --ring: 196 61% 50%;
-
-    --sidebar-background: 210 40% 8%;
-    --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 196 61% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 30% 15%;
-    --sidebar-accent-foreground: 196 61% 70%;
-    --sidebar-border: 210 30% 18%;
-    --sidebar-ring: 196 61% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 22 18% 87%;            /* stone #E0DAD3 */
+    --input: 22 18% 87%;
+    --ring: 22 60% 40%;
+    --radius: 0rem;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #F9F6F1;
+    color: #1A1A1A;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+  ::selection {
+    background-color: #A05730;
+    color: #FFEE93;
+  }
+}
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #F9F6F1; }
+::-webkit-scrollbar-thumb { background: #A05730; }
+
+@layer utilities {
+  .label {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #5A5A5A;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .label-sol {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #FFEE93;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .label-terra {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #A05730;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .mono-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
   }
 }
