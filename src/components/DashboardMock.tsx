@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 const BAR_DATA = [
-  { label: "L", h: 42, color: "#A0CED9" },
-  { label: "M", h: 61, color: "#A0CED9" },
-  { label: "X", h: 38, color: "#A0CED9" },
-  { label: "J", h: 75, color: "#A05730" },
-  { label: "V", h: 88, color: "#A05730" },
-  { label: "S", h: 52, color: "#A0CED9" },
-  { label: "D", h: 28, color: "#E5DCA2" },
+  { label: "L", h: 42, value: 1840, color: "#A0CED9" },
+  { label: "M", h: 61, value: 2670, color: "#A0CED9" },
+  { label: "X", h: 38, value: 1660, color: "#A0CED9" },
+  { label: "J", h: 75, value: 3280, color: "#A05730" },
+  { label: "V", h: 88, value: 3850, color: "#A05730" },
+  { label: "S", h: 52, value: 2275, color: "#A0CED9" },
+  { label: "D", h: 28, value: 1225, color: "#E5DCA2" },
 ];
 
 const FEED = [
@@ -40,6 +40,8 @@ const useCountUp = (target: number, duration = 1.8, delay = 0.3) => {
 
 const DashboardMock = () => {
   const barsRef = useRef<HTMLDivElement>(null);
+  const barInnerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const tooltipRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [feedIdx, setFeedIdx] = useState(0);
   const revenueRef = useCountUp(24680, 2, 0.5);
   const clientsRef = useCountUp(47, 1.4, 0.7);
@@ -59,6 +61,30 @@ const DashboardMock = () => {
     const iv = setInterval(() => setFeedIdx((i) => (i + 1) % FEED.length), 3200);
     return () => clearInterval(iv);
   }, []);
+
+  const handleBarEnter = (idx: number) => {
+    barInnerRefs.current.forEach((b, i) => {
+      if (!b) return;
+      if (i === idx) {
+        gsap.to(b, { scaleY: 1.1, backgroundColor: "#A05730", duration: 0.18, transformOrigin: "bottom", overwrite: true });
+      } else {
+        gsap.to(b, { opacity: 0.28, duration: 0.18, overwrite: true });
+      }
+    });
+    if (tooltipRefs.current[idx]) {
+      gsap.to(tooltipRefs.current[idx], { opacity: 1, duration: 0.15, overwrite: true });
+    }
+  };
+
+  const handleBarLeave = () => {
+    barInnerRefs.current.forEach((b, i) => {
+      if (!b) return;
+      gsap.to(b, { scaleY: 1, backgroundColor: BAR_DATA[i].color, opacity: 1, duration: 0.22, transformOrigin: "bottom", overwrite: true });
+    });
+    tooltipRefs.current.forEach((t) => {
+      if (t) gsap.to(t, { opacity: 0, duration: 0.12, overwrite: true });
+    });
+  };
 
   const visibleFeed = [...FEED.slice(feedIdx), ...FEED.slice(0, feedIdx)].slice(0, 4);
 
@@ -102,12 +128,32 @@ const DashboardMock = () => {
       <div className="flex flex-1 min-h-0 bg-[#F9F7F3]">
         {/* Chart */}
         <div className="flex-1 border-r border-[#E8E4DC] px-4 pt-3 pb-2 flex flex-col">
-          <div className="text-[8px] uppercase tracking-widest text-[#A09590] mb-2">Ingresos semanales</div>
+          <div className="text-[8px] uppercase tracking-widest text-[#A09590] mb-2">
+            Ingresos semanales · <span style={{ color: "#A05730" }}>Caso: Cafetería Triana</span>
+          </div>
           <div ref={barsRef} className="flex-1 flex items-end gap-1">
-            {BAR_DATA.map((b) => (
-              <div key={b.label} className="flex-1 flex flex-col items-center gap-1">
+            {BAR_DATA.map((b, i) => (
+              <div
+                key={b.label}
+                className="flex-1 flex flex-col items-center gap-1 cursor-crosshair"
+                onMouseEnter={() => handleBarEnter(i)}
+                onMouseLeave={handleBarLeave}
+              >
                 <div className="w-full relative" style={{ height: 72 }}>
                   <div
+                    ref={(el) => { tooltipRefs.current[i] = el; }}
+                    className="absolute left-1/2 font-mono text-[7px] font-bold whitespace-nowrap pointer-events-none"
+                    style={{
+                      bottom: `calc(${b.h}% + 5px)`,
+                      transform: "translateX(-50%)",
+                      color: "#A05730",
+                      opacity: 0,
+                    }}
+                  >
+                    €{b.value.toLocaleString("es-ES")}
+                  </div>
+                  <div
+                    ref={(el) => { barInnerRefs.current[i] = el; }}
                     className="bar-inner absolute bottom-0 left-0 right-0"
                     style={{ height: `${b.h}%`, backgroundColor: b.color }}
                   />

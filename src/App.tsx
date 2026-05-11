@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,6 +11,8 @@ import Resultados from "./pages/Resultados";
 import Servicios from "./pages/Servicios";
 import Contacto from "./pages/Contacto";
 import NotFound from "./pages/NotFound";
+
+const DemoApp = lazy(() => import("./pages/DemoApp"));
 
 const queryClient = new QueryClient();
 
@@ -50,6 +52,14 @@ const App = () => {
             <Route path="/resultados" element={<Resultados />} />
             <Route path="/servicios" element={<Servicios />} />
             <Route path="/contacto" element={<Contacto />} />
+            <Route
+              path="/demo"
+              element={
+                <Suspense fallback={<div style={{ minHeight: "100vh", background: "#F9F6F1" }} />}>
+                  <DemoApp />
+                </Suspense>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </LenisProvider>
