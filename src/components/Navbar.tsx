@@ -80,6 +80,18 @@ const Navbar = () => {
               {l.label}
             </Link>
           ))}
+          <Link
+            to="/agente"
+            className="ml-3 px-4 py-1.5 text-sm font-bold tracking-wide transition-colors duration-200"
+            style={{
+              background: location.pathname === "/agente" ? "#C4733E" : "#A05730",
+              color: "#F9F6F1",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#C4733E")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = location.pathname === "/agente" ? "#C4733E" : "#A05730")}
+          >
+            Pedir agente →
+          </Link>
         </div>
 
         {/* Mobile burger */}
@@ -113,6 +125,13 @@ const Navbar = () => {
               {l.label}
             </Link>
           ))}
+          <Link
+            to="/agente"
+            className="py-3 text-sm font-bold"
+            style={{ color: "#A05730" }}
+          >
+            Pedir agente →
+          </Link>
         </div>
       </div>
     </nav>

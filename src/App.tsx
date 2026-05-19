@@ -11,6 +11,7 @@ import Resultados from "./pages/Resultados";
 import Servicios from "./pages/Servicios";
 import Contacto from "./pages/Contacto";
 import NotFound from "./pages/NotFound";
+import AgentesFunnel from "./pages/AgentesFunnel";
 
 const DemoApp = lazy(() => import("./pages/DemoApp"));
 
@@ -60,6 +61,7 @@ const App = () => {
                 </Suspense>
               }
             />
+            <Route path="/agente" element={<AgentesFunnel />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </LenisProvider>

@@ -28,6 +28,7 @@ const Footer = () => (
               { label: "Servicios y precios", href: "/servicios" },
               { label: "Diagnóstico gratuito", href: "/diagnostico" },
               { label: "Contacto", href: "/contacto" },
+              { label: "⚡ Pedir agente en 72h", href: "/agente" },
             ].map((l) => (
               <li key={l.href}>
                 <Link
