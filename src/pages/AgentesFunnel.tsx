@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 // ── TYPES ──
 interface State {
@@ -52,7 +53,8 @@ export default function AgentesFunnel() {
   const [step, setStep]   = useState(0);
   const [prev, setPrev]   = useState<number | null>(null);
   const [state, setState] = useState<State>(INITIAL);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const bodyRef = useRef(document.body);
 
   // Lock body scroll — funnel is full-screen
@@ -78,21 +80,24 @@ export default function AgentesFunnel() {
 
   const progress = step === 0 ? 0 : Math.round((step / TOTAL) * 100);
 
-  const handleSubmit = () => {
-    const subject = encodeURIComponent("Nueva solicitud de agente — DigiDot Partners");
-    const body = encodeURIComponent(
-      "NUEVA SOLICITUD DE AGENTE\n\n" +
-      `Nombre: ${state.nombre}\n` +
-      `Email: ${state.email}\n` +
-      (state.empresa ? `Empresa: ${state.empresa}\n` : "") +
-      `\nAgente solicitado: ${state.agente}\n` +
-      `Tipo de negocio: ${state.negocio}\n` +
-      `Presupuesto: ${state.presupuesto}\n` +
-      `\nDESCRIPCIÓN DEL CASO:\n${state.caso}\n\n` +
-      "---\nEnviado desde digidotpartners.es/agente"
-    );
-    window.location.href = `mailto:diegopedraza43@gmail.com?subject=${subject}&body=${body}`;
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    setSubmitError(null);
+    const { error } = await supabase.from("leads").insert({
+      source: "agente",
+      nombre: state.nombre,
+      email: state.email,
+      empresa: state.empresa || null,
+      agente_tipo: state.agente,
+      tipo_negocio: state.negocio,
+      presupuesto: state.presupuesto,
+      caso: state.caso,
+    });
+    setSubmitting(false);
+    if (error) {
+      setSubmitError("No pudimos enviar tu solicitud. Prueba de nuevo en unos segundos.");
+      return;
+    }
     goTo(6);
   };
 
@@ -264,11 +269,12 @@ export default function AgentesFunnel() {
                 </div>
               ))}
             </div>
+            {submitError && <p style={{ color: "#C0392B", fontSize: "0.8rem", marginBottom: "0.75rem" }}>{submitError}</p>}
             <Nav
               onBack={() => goTo(4)}
               onNext={handleSubmit}
-              disabled={state.nombre.trim().length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email)}
-              nextLabel="Enviar solicitud →"
+              disabled={submitting || state.nombre.trim().length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email)}
+              nextLabel={submitting ? "Enviando…" : "Enviar solicitud →"}
               nextColor={S.musgo}
               nextHover={S.musgo2}
             />
@@ -324,7 +330,7 @@ export default function AgentesFunnel() {
         <p style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase", color: S.ghost }}>
           DigiDot Partners · Sevilla
         </p>
-        {submitted && (
+        {step === 6 && (
           <p style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.6rem", color: S.ghost }}>
             {state.email}
           </p>

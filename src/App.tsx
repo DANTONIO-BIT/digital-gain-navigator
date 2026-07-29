@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { DiagnosticProvider } from "@/context/DiagnosticContext";
+import { AuthProvider } from "@/context/AuthContext";
 import Lenis from "lenis";
 import Preloader from "@/components/Preloader";
 import Index from "./pages/Index";
@@ -12,6 +13,9 @@ import Servicios from "./pages/Servicios";
 import Contacto from "./pages/Contacto";
 import NotFound from "./pages/NotFound";
 import AgentesFunnel from "./pages/AgentesFunnel";
+import AdminLogin from "./pages/AdminLogin";
+import Admin from "./pages/Admin";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const DemoApp = lazy(() => import("./pages/DemoApp"));
 
@@ -42,6 +46,7 @@ const App = () => {
 
   return (
   <QueryClientProvider client={queryClient}>
+    <AuthProvider>
     <DiagnosticProvider>
       {!preloaderDone && <Preloader onComplete={() => setPreloaderDone(true)} />}
       <Toaster />
@@ -62,11 +67,14 @@ const App = () => {
               }
             />
             <Route path="/agente" element={<AgentesFunnel />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </LenisProvider>
       </BrowserRouter>
     </DiagnosticProvider>
+    </AuthProvider>
   </QueryClientProvider>
   );
 };

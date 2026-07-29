@@ -1,18 +1,35 @@
 import { useRef, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { supabase } from "@/lib/supabaseClient";
 
 const Contacto = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ nombre: "", negocio: "", telefono: "", mensaje: "" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSending(true);
+    setError(null);
+    const { error } = await supabase.from("leads").insert({
+      source: "contacto",
+      nombre: form.nombre,
+      telefono: form.telefono || null,
+      tipo_negocio: form.negocio,
+      mensaje: form.mensaje,
+    });
+    setSending(false);
+    if (error) {
+      setError("No pudimos enviar tu mensaje. Prueba de nuevo en unos segundos.");
+      return;
+    }
     setSent(true);
   };
 
@@ -130,12 +147,14 @@ const Contacto = () => {
                     onBlur={(e) => (e.target.style.borderColor = "#2A2A2A")} />
                 </div>
 
-                <button type="submit"
+                {error && <p className="text-sm" style={{ color: "#FF6B6B" }}>{error}</p>}
+
+                <button type="submit" disabled={sending}
                   className="w-full py-4 font-semibold text-sm tracking-wide text-raw transition-colors duration-200"
-                  style={{ background: "#A05730" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "#C4733E")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "#A05730")}>
-                  Enviar mensaje →
+                  style={{ background: "#A05730", opacity: sending ? 0.7 : 1, cursor: sending ? "wait" : "pointer" }}
+                  onMouseEnter={(e) => !sending && (e.currentTarget.style.background = "#C4733E")}
+                  onMouseLeave={(e) => !sending && (e.currentTarget.style.background = "#A05730")}>
+                  {sending ? "Enviando…" : "Enviar mensaje →"}
                 </button>
 
                 <p className="text-xs text-center" style={{ color: "#3A3A3A" }}>
